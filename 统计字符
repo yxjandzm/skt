@@ -1,0 +1,38 @@
+#include <stdio.h>
+#include <string.h>
+
+int main()
+{
+	int c,d,e,f=0,g,h=0;
+	char a[1000],b[1000];
+	
+	printf("请输入你需要查询的句子。\n请输入：");
+	gets(a);
+	strlwr(a);
+	c=strlen(a);
+	
+	printf("\n请输入在句子中所需要查询的单词。\n请输入：");
+	gets(b);
+	strlwr(b);
+	d=strlen(b);
+	
+	for(e=0;e<c;e++)
+	{
+		for(g=0;g<d;g++)
+		{
+			if(a[e+g]==b[g])
+			{
+				if(g+1==d)
+				{
+					h++;
+				}
+				continue;
+			}
+			break;
+		}
+	}
+	
+	printf("\n该句子有：%d个%s\n",h,b);
+	printf("查询完毕！\n");
+	return 0;
+} 
