@@ -1,0 +1,153 @@
+#include <stdio.h>
+#include <stdlib.h>
+ 
+struct student
+{
+	int id;
+	char name[20];
+	char sex;
+	int age;
+};
+ 
+void display_menu();
+int stu_insert(struct student *pstu);
+int stu_print(struct student stu);
+ 
+int main(int argc, char* argv[])
+{
+	char sz;
+	char szPath[100];
+	char szName[20];
+	char found = 0;
+	FILE *fp = NULL;
+	struct student stu;
+	int n;
+ 
+	for(;;)
+	{
+		flushall();
+		display_menu();
+		scanf("%c",&sz);
+		switch (sz)
+		{
+		case '1':
+			printf("加载文件..：\n请输入要加载的文件：");
+			scanf("%s",szPath);
+			fp = fopen(szPath,"ab+");
+			if(fp != NULL)
+			{
+				printf("文件加载成功！\n");
+				system("pause");
+				break;
+			}
+			break;
+	    case '2':
+	        printf("录入学生信息.. \n");
+			if(!fp)
+			{
+				printf("需要先加载文件后再使用！\n");
+				system("pause");
+				break;
+			}
+			stu_insert(&stu);
+			fwrite(&stu,sizeof(struct student),1,fp);
+		    break;
+	    case '3':
+			printf("显示学生信息.. \n");
+			if(!fp)
+			{
+				printf("需要先加载文件后再使用！\n");
+				system("pause");
+				break;
+			}
+			rewind(fp); /*文件指针返回文件头位置*/
+			n = fread(&stu,sizeof(struct student),1,fp);
+			while(n>0)
+			{
+				stu_print(stu);
+				n = fread(&stu,sizeof(struct student),1,fp);
+			}
+			break;
+	    case '4':
+			printf("查找学生信息.. \n");
+		    if(!fp)
+			{
+				printf("需要先加载文件后再使用！\n");
+				system("pause");
+				break;
+			}
+			rewind(fp); /*文件指针返回文件头位置*/
+			printf("输入所要查找的学生姓名：");
+			scanf("%s",szName);
+			n = fread(&stu,sizeof(struct student),1,fp);
+			while(n>0)
+			{
+				if(strcmp(stu.name,szName)==0)
+				{
+					found++;
+					stu_print(stu);
+				}
+				n = fread(&stu,sizeof(struct student),1,fp);
+			}
+			if(found == 0)
+			{
+				printf("不存在该生[%s]\n",szName);
+				system("pause");
+			}
+			else
+			{
+				printf("找到了%d条信息\n",found);
+				system("pause");
+				found = 0;
+			}
+			break;
+		default:
+			exit(0);
+		}
+	
+ }
+	return 0;
+}
+ 
+/*菜单*/
+void display_menu()
+{
+	char str[100];
+    FILE* fp;
+	char *szChar;
+ 
+    fp = fopen("config.cfg", "r");
+    szChar = fgets(str,100,fp);
+    while (szChar != NULL)
+	{
+		printf("%s", str);
+        szChar = fgets(str,100,fp);
+	}
+	fclose(fp);
+}
+ 
+/*插入学生信息*/
+int stu_insert(struct student *pstu)
+{
+	printf("学号：");
+	scanf("%d",&pstu->id);
+	printf("姓名：");
+	scanf("%s",&pstu->name);
+	getchar();
+	printf("性别 （F/M）：");
+	scanf("%c",&pstu->sex);
+	printf("年龄：");
+	scanf("%d",&pstu->age);
+	return 0;
+}
+ 
+/*输入学生信息*/
+int stu_print(struct student stu)
+{
+	printf("%d\t%s\t%s\t%d\n",
+		stu.id,
+		stu.name,
+		stu.sex == 'M'?"男":"女",
+		stu.age);
+	return 0;
+}
